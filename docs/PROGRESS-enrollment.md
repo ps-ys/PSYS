@@ -49,7 +49,6 @@ with"** field first — that's the actual to-do list, not a summary to skim.
 - Proceed with pending feature work or remaining unverified items (student dispute filing UI, end-to-end permitted-exit live session verification) as directed by supervisor.
 **Open questions for teammate:**
 - Unexpected RLS policy violation when inserting into `attendance_observations` with service-role key.
-- Memory files (`.gitignore` item) still flagged for Akhil to confirm.
 **Blockers:**
 - None.
 
