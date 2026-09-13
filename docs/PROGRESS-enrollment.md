@@ -46,9 +46,9 @@ with"** field first — that's the actual to-do list, not a summary to skim.
 - `docs/PROGRESS-enrollment.md`
 - `docs/DECISIONS.md`
 **Left / not done:**
-- `resolveReviewItem()` needs follow-up hardening to verify affected row count (e.g. via `.select()` after update or checking returned rows) and throw/report failure if no rows were modified.
+- None.
 **Next session should start with:**
-- Harden `resolveReviewItem()` to check affected row count on update, or proceed with pending feature work.
+- Proceed with pending feature work.
 **Open questions for teammate:**
 - Memory files (`.gitignore` item) still flagged for Akhil to confirm.
 **Blockers:**
