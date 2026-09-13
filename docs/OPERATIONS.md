@@ -51,6 +51,12 @@ CAMERA_1_CREDS=admin:yourpassword # one var per camera, named after credential_r
 PHONE_TEST_CAM_CREDS= # empty = explicitly no-auth camera
 TICK_SECRET=<random-string> # must match cron-job.org's X-Tick-Secret header exactly
 
+## Database Migrations
+
+- Migrations are applied via `supabase db push` (confirmed from shell history, not from an existing documented process as of 2026-09-13).
+- Whoever runs it needs the Supabase CLI authenticated locally.
+- This should be treated as the working assumption until confirmed otherwise by whoever normally runs it.
+
 ## Deployment (Render)
 
 - **Web Service** `psys-camera-service` deployed from `services/camera-service`
