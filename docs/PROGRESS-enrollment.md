@@ -31,6 +31,30 @@ with"** field first — that's the actual to-do list, not a summary to skim.
 
 ---
 
+### 2026-09-13 — Session 16
+**Goal for this session:** Fix enrollment-worker concurrency races (atomic job claiming + per-student lock on is_primary).
+**Done:**
+- Created migration 0040 with Postgres RPC `atomic_insert_student_biometric` to handle `is_primary` logic in a single atomic transaction locked by `pg_advisory_xact_lock` keyed on student ID.
+- Updated `worker.py` to use `atomic_insert_student_biometric` RPC.
+- Updated `worker.py` to atomically claim jobs via `UPDATE ... WHERE status = 'pending' RETURNING *`.
+- Applied migration successfully to remote and verified syntax with python compile check.
+**Files changed:**
+- `supabase/migrations/0040_set_primary_biometric.sql`
+- `services/enrollment-worker/app/worker.py`
+- `docs/DECISIONS.md`
+- `docs/PROGRESS-enrollment.md`
+**Left / not done:**
+- None.
+**Next session should start with:**
+- Proceed with pending feature work or remaining unverified items (student dispute filing UI, end-to-end permitted-exit live session verification) as directed by supervisor.
+**Open questions for teammate:**
+- Unexpected RLS policy violation when inserting into `attendance_observations` with service-role key. (Resolved: live-tested today (2026-09-13) via a real insert into attendance_observations using camera-service's actual get_client() service-role client (sb_secret_ token, supabase-py 2.31.0) — succeeded cleanly with no RLS violation, and current_user_role diagnostic was consistent with genuine service-role context. Root cause of the original report is unconfirmed (no logs/stack trace were preserved) but is not reproducible in the current codebase/environment.)
+- Memory files (`.gitignore` item) still flagged for Akhil to confirm.
+**Blockers:**
+- None.
+
+---
+
 ### 2026-09-12 — Session 12
 **Goal for this session:** Spot-check `resolveReviewItem()` against real finalized session data and verify RLS authorization behavior.
 **Done:**

@@ -22,6 +22,10 @@ delete, bad migration, etc.) has no recovery path beyond what's in git
 
 Owner: revisit before Phase 0 pilot goes live with a real institution.
 
+## Database Migrations
+
+See `docs/OPERATIONS.md` (Database Migrations section) for details on how schema changes are applied.
+
 ## Auth & Access Control (Phase 2 — COMPLETE)
 
 **Status: SATISFIED.**

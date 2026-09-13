@@ -110,7 +110,11 @@ def process_job(job):
     storage_path = job["storage_path"]
     retry_count = job.get("retry_count", 0)
 
-    supabase.table("enrollment_jobs").update({"status": "processing"}).eq("id", job_id).execute()
+    # Atomic claim: if another worker already claimed it, this will return empty
+    claim_res = supabase.table("enrollment_jobs").update({"status": "processing"}).eq("id", job_id).eq("status", "pending").execute()
+    if not claim_res.data:
+        print(f"[skip] job {job_id} already claimed or not pending")
+        return
 
     try:
         file_bytes = supabase.storage.from_("enrollment-photos").download(storage_path)
@@ -177,43 +181,20 @@ def process_job(job):
             )
             return
 
-        # ASSUMPTION: Single worker process only. No atomic job claiming exists, so concurrent workers would race here.
-        existing = (
-            supabase.table("student_biometrics")
-            .select("id, quality_score")
-            .eq("student_id", student_id)
-            .eq("is_primary", True)
-            .execute()
-        )
-
-        is_primary = False
-        old_primary_id = None
-
-        if len(existing.data) == 0:
-            is_primary = True
-        else:
-            current_primary = existing.data[0]
-            if new_quality > (current_primary.get("quality_score") or 0.0):
-                is_primary = True
-                old_primary_id = current_primary["id"]
-
-        supabase.table("student_biometrics").insert(
-            {
-                "institution_id": institution_id,
-                "student_id": student_id,
-                "face_embedding": new_embedding,
-                "face_embedding_v2": new_embedding_v2,
-                "embedding_model": result["embedding_model"],
-                "embedding_version": 1,
-                "is_primary": is_primary,
-                "quality_score": new_quality,
-            }
-        ).execute()
+        # Atomically decide primary status and insert using RPC
+        rpc_result = supabase.rpc("atomic_insert_student_biometric", {
+            "p_institution_id": institution_id,
+            "p_student_id": student_id,
+            "p_face_embedding": new_embedding,
+            "p_face_embedding_v2": new_embedding_v2,
+            "p_embedding_model": result["embedding_model"],
+            "p_embedding_version": 1,
+            "p_quality_score": new_quality
+        }).execute()
         
-        if old_primary_id:
-            supabase.table("student_biometrics").update(
-                {"is_primary": False}
-            ).eq("id", old_primary_id).execute()
+        is_primary = rpc_result.data
+        if is_primary:
+            print(f"[biometrics] new primary set for student {student_id}")
 
         student = (
             supabase.table("students")
