@@ -85,7 +85,7 @@ export default async function ClassesPage() {
               <div className="ledger-head" style={{ gridTemplateColumns: '2fr 1fr 2fr 1fr 1fr' }}>
                 <div>Subject</div><div>Room</div><div>Recurrence</div><div>Active</div><div>Link</div>
               </div>
-              {classes?.map((c: any) => (
+              {classes?.map((c) => (
                 <Link key={c.id} href={`/classes/${c.id}`} className="ledger-row cursor-pointer hover:bg-slate-50 transition-colors" style={{ gridTemplateColumns: '2fr 1fr 2fr 1fr 1fr' }}>
                   <div className="text-sm font-medium">{c.subject}</div>
                   <div className="text-sm" style={{ color: 'var(--muted)' }}>{c.rooms?.name || '—'}</div>
