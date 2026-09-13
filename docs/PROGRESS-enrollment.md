@@ -38,6 +38,7 @@ with"** field first — that's the actual to-do list, not a summary to skim.
 - Verified PASS when called by a user properly authorized under RLS (`admin@test.local`, matching the class's actual `teacher_id`): status correctly changed to 'present' and `audit_logs` entry correctly recorded with `actor_user_id` (`38745115-3314-4032-8488-db196a71f966`). Reverted `final_attendance` status back to 'uncertain' post-test.
 - Identified an open correctness bug: an earlier test using `teacher@test.local` (not the assigned teacher for the class) returned `ok: true` from `resolveReviewItem()` but silently updated zero rows due to RLS blocking unauthorized updates without erroring, while still writing an `audit_logs` row.
 - Hardened `resolveReviewItem()` in `apps/web/lib/enrollment/attendance.ts` to reject silent no-op updates when RLS blocks unauthorized access (commit `2f6ab5f`).
+- Removed `any` type escapes on classes pages (`apps/web/app/classes/[id]/page.tsx` and `apps/web/app/classes/page.tsx`), properly typing PostgREST relation return shapes with declared interfaces.
 - Retroactive note on commit `2f6ab5f`: `apps/web/lib/enrollment/attendance.ts` also introduced `triggerCameraCapture(cameraId, sessionId)` and `getLiveSessionData(sessionId)` to support the live session monitoring feature (`apps/web/app/sessions/[id]/live/`), which was not originally documented in the initial session summary.
 - Cleaned up temporary test route `apps/web/app/test-action/`.
 **Files changed:**
@@ -45,9 +46,9 @@ with"** field first — that's the actual to-do list, not a summary to skim.
 - `docs/PROGRESS-enrollment.md`
 - `docs/DECISIONS.md`
 **Left / not done:**
-- `resolveReviewItem()` needs follow-up hardening to verify affected row count (e.g. via `.select()` after update or checking returned rows) and throw/report failure if no rows were modified.
+- None.
 **Next session should start with:**
-- Harden `resolveReviewItem()` to check affected row count on update, or proceed with pending feature work.
+- Proceed with pending feature work.
 **Open questions for teammate:**
 - Memory files (`.gitignore` item) still flagged for Akhil to confirm.
 **Blockers:**
