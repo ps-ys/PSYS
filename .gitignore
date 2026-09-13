@@ -9,3 +9,4 @@ test_db.py
 services/camera-service/tmp/.claude/settings.local.json
 .claude/settings.local.json
 test-images/
+.vscode/
