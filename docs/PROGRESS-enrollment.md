@@ -48,7 +48,7 @@ with"** field first — that's the actual to-do list, not a summary to skim.
 **Next session should start with:**
 - Proceed with pending feature work or remaining unverified items (student dispute filing UI, end-to-end permitted-exit live session verification) as directed by supervisor.
 **Open questions for teammate:**
-- Unexpected RLS policy violation when inserting into `attendance_observations` with service-role key.
+- Unexpected RLS policy violation when inserting into `attendance_observations` with service-role key. (Resolved: live-tested today (2026-09-13) via a real insert into attendance_observations using camera-service's actual get_client() service-role client (sb_secret_ token, supabase-py 2.31.0) — succeeded cleanly with no RLS violation, and current_user_role diagnostic was consistent with genuine service-role context. Root cause of the original report is unconfirmed (no logs/stack trace were preserved) but is not reproducible in the current codebase/environment.)
 - Memory files (`.gitignore` item) still flagged for Akhil to confirm.
 **Blockers:**
 - None.
