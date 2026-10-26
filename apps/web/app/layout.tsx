@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import NavLinks from "@/lib/NavLinks";
 import UserMenu from "@/lib/UserMenu";
+import DemoBar from "@/lib/DemoBar";
 import { createClient } from "@/lib/supabase/server";
 import "./globals.css";
 
@@ -55,6 +56,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
       </head>
       <body className="min-h-full flex flex-col">
+        <DemoBar currentRole={role} userName={fullName} />
         <nav
           className="border-b px-6 py-3 flex items-center justify-between text-sm sticky top-0 z-10"
           style={{ background: 'var(--background)', borderColor: 'var(--border)', color: 'var(--foreground)' }}

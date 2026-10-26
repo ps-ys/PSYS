@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useTransition } from 'react'
 import Link from 'next/link'
-import { triggerCameraCapture, getLiveSessionData } from '@/lib/enrollment/attendance'
+import { triggerCameraCapture, getLiveSessionData, simulateDemoCapture } from '@/lib/enrollment/attendance'
 
 interface Student {
   id: string
@@ -158,6 +158,36 @@ export default function LiveSessionDashboard({ initialData }: LiveSessionProps) 
     }
   }
 
+  const handleSimulateCapture = async () => {
+    setIsCapturing(true)
+    setLastCaptureResult(null)
+
+    try {
+      const res = await simulateDemoCapture(data.session.id)
+      if (res.success) {
+        setLastCaptureResult({
+          type: 'success',
+          faces: res.faces_detected,
+          results: [],
+          time: new Date().toLocaleTimeString(),
+        })
+        const fresh = await getLiveSessionData(data.session.id)
+        if (fresh) {
+          setData(fresh)
+        }
+      }
+    } catch (e: any) {
+      setLastCaptureResult({
+        type: 'error',
+        message: e.message || 'Simulation failed',
+        time: new Date().toLocaleTimeString(),
+      })
+    } finally {
+      setIsCapturing(false)
+      setLastUpdated(new Date())
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Top Header Card: Title, Status, and Controls */}
@@ -217,6 +247,18 @@ export default function LiveSessionDashboard({ initialData }: LiveSessionProps) 
                   Trigger Target Capture
                 </>
               )}
+            </button>
+
+            {/* Demo AI Cycle Simulation Button */}
+            <button
+              type="button"
+              onClick={handleSimulateCapture}
+              disabled={isCapturing}
+              className="px-3 py-2 text-xs font-semibold rounded-lg border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100 transition shadow-sm flex items-center gap-1.5 cursor-pointer"
+              title="Simulates an autonomous computer vision frame capture and ArcFace recognition cycle"
+            >
+              <span>📸</span>
+              <span>Simulate AI Cycle (Demo)</span>
             </button>
 
             <Link

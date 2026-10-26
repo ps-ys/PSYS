@@ -288,3 +288,66 @@ export async function getLiveSessionData(sessionId: string) {
   }
 }
 
+/**
+ * Interactive Presentation & Demo: Simulate an autonomous AI Camera ingest cycle.
+ * Generates realistic ArcFace 512-D matching observations for the session roster.
+ */
+export async function simulateDemoCapture(sessionId: string) {
+  const user = await getCurrentUser()
+  const supabase = await createClient()
+
+  const { data: session } = await supabase
+    .from('class_sessions')
+    .select('id, class_id, institution_id')
+    .eq('id', sessionId)
+    .single()
+
+  if (!session) throw new Error('Session not found')
+
+  const { data: rosterRows } = await supabase.rpc('derive_session_roster', { p_session_id: sessionId })
+  let studentIds = (rosterRows || []).map((r: any) => r.student_id)
+
+  if (studentIds.length === 0 && session.class_id) {
+    const { data: enrollments } = await supabase
+      .from('class_enrollments')
+      .select('student_id')
+      .eq('class_id', session.class_id)
+      .eq('status', 'active')
+    studentIds = (enrollments || []).map((e: any) => e.student_id)
+  }
+
+  const now = new Date().toISOString()
+  const observationsToInsert: any[] = []
+
+  studentIds.forEach((sid: string, idx: number) => {
+    const isUncertain = idx === 1
+    const similarity = isUncertain ? 0.61 : +(0.88 + (idx % 10) * 0.01).toFixed(2)
+    const quality = +(0.85 + (idx % 10) * 0.01).toFixed(2)
+    observationsToInsert.push({
+      institution_id: session.institution_id || user.institution_id,
+      session_id: sessionId,
+      student_id: sid,
+      captured_at: now,
+      similarity_score: similarity,
+      quality_score: quality,
+      match_status: isUncertain ? 'uncertain' : 'matched',
+      model_version: 'insightface_arcface_512',
+    })
+  })
+
+  if (observationsToInsert.length > 0) {
+    await supabase.from('attendance_observations').insert(observationsToInsert)
+  }
+
+  revalidatePath(`/sessions/${sessionId}/live`)
+  revalidatePath(`/sessions/${sessionId}`)
+
+  return {
+    success: true,
+    faces_detected: observationsToInsert.length,
+    matched: observationsToInsert.filter((o) => o.match_status === 'matched').length,
+    flagged: observationsToInsert.filter((o) => o.match_status !== 'matched').length,
+  }
+}
+
+

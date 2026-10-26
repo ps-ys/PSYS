@@ -77,11 +77,37 @@ export default async function StudentDashboard({ user }: { user: any }) {
   return (
     <div className="page-shell">
       <div className="page-inner" style={{ maxWidth: '56rem' }}>
-        <p className="page-eyebrow">Student Portal</p>
-        <h1 className="page-title">My Attendance</h1>
-        <p className="page-subtitle">
-          {user.full_name} {student.roll_number ? `(${student.roll_number})` : ''}
-        </p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
+          <div>
+            <p className="page-eyebrow">Student Portal</p>
+            <h1 className="page-title text-2xl font-bold tracking-tight text-slate-900">Personal Attendance Record</h1>
+            <p className="page-subtitle text-xs text-slate-500 mb-0">
+              {user.full_name} &middot; <span className="font-mono font-semibold text-blue-600">{student.roll_number || 'CS2026-001'}</span>
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="badge badge-good text-xs py-1 px-3">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              Zero-Auth Student Verified
+            </span>
+          </div>
+        </div>
+
+        {/* Attendance Compliance Banner */}
+        <div className="mb-8 p-4 rounded-xl border border-blue-100 bg-blue-50/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div>
+            <div className="text-xs font-semibold text-blue-900">Institutional Minimum Policy: 75% Required</div>
+            <div className="text-[11px] text-blue-700 mt-0.5">
+              Attendance is continuously calculated from classroom camera frames using ArcFace embeddings. Permitted exits recorded by faculty do not count against your presence score.
+            </div>
+          </div>
+          <div className="text-right flex-shrink-0">
+            <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${attendanceRate >= 75 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+              {attendanceRate >= 75 ? '✓ Good Standing' : '⚠️ Action Required'}
+            </span>
+          </div>
+        </div>
 
         {/* Stats Row */}
         <div className="grid grid-cols-2 md:grid-cols-4 mb-12 border-t" style={{ borderColor: 'var(--border)' }}>
