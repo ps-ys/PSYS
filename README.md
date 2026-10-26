@@ -204,9 +204,9 @@ The camera service is dockerized and live on [Render](https://render.com):
 1. Import repository `ps-ys/PSYS` into [Vercel](https://vercel.com/new).
 2. Set **Root Directory** to `apps/web`.
 3. Add the following **Environment Variables**:
-   - `NEXT_PUBLIC_SUPABASE_URL`: `https://<project-ref>.supabase.co`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Supabase Anonymous Key
-   - `SUPABASE_SERVICE_ROLE_KEY`: Supabase Service Role Key
+   - `NEXT_PUBLIC_SUPABASE_URL`: `https://lhocffkznuojtdnelwzh.supabase.co`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: *(configured anon key)*
+   - `SUPABASE_SERVICE_ROLE_KEY`: *(configured service role key)*
    - `CAMERA_SERVICE_URL`: `https://psys-camera-service.onrender.com`
 4. Click **Deploy**.
 
