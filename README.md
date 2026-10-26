@@ -7,7 +7,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL%20%7C%20RLS-3ECF8E?style=for-the-badge&logo=supabase)](https://supabase.com/)
 [![InsightFace](https://img.shields.io/badge/InsightFace-ArcFace%20512--D-FF6F00?style=for-the-badge)](https://github.com/deepinsight/insightface)
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/)
+[![Deployed on Vercel](https://img.shields.io/badge/Deployed-Vercel-black?style=for-the-badge&logo=vercel)](https://psys-rho.vercel.app)
 [![Backend on Render](https://img.shields.io/badge/Render-Active-46E3B7?style=for-the-badge&logo=render)](https://render.com/)
 
 > **An enterprise-grade, multi-tenant automated classroom attendance platform powered by computer vision, quorum-based session boundary detection, and privacy-first biometric verification.** Eliminates proxy attendance and manual roll-calls with zero routine teacher friction.
@@ -16,7 +16,7 @@
 
 ## 🚀 Live Demo & Access
 
-- **Web Application Portal**: [Deployed on Vercel](#deployment-guide) (or visit your custom deployment)
+- **Web Application Portal (Live Production)**: [`https://psys-rho.vercel.app`](https://psys-rho.vercel.app)
 - **Camera & AI Microservice**: [`https://psys-camera-service.onrender.com`](https://psys-camera-service.onrender.com) (`/health` status: `ok`)
 - **Interactive Persona Access**:
 
@@ -201,14 +201,13 @@ The camera service is dockerized and live on [Render](https://render.com):
   - `CAMERA_1_CREDS`: Camera credentials (`admin:password`)
 
 ### 3. Web App Deployment on Vercel
-1. Import repository `ps-ys/PSYS` into [Vercel](https://vercel.com/new).
-2. Set **Root Directory** to `apps/web`.
-3. Add the following **Environment Variables**:
-   - `NEXT_PUBLIC_SUPABASE_URL`: `https://lhocffkznuojtdnelwzh.supabase.co`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: *(configured anon key)*
-   - `SUPABASE_SERVICE_ROLE_KEY`: *(configured service role key)*
-   - `CAMERA_SERVICE_URL`: `https://psys-camera-service.onrender.com`
-4. Click **Deploy**.
+- **Live Production URL**: [`https://psys-rho.vercel.app`](https://psys-rho.vercel.app)
+- **Root Directory**: `apps/web`
+- **Configured Environment Variables**:
+  - `NEXT_PUBLIC_SUPABASE_URL`: `https://lhocffkznuojtdnelwzh.supabase.co`
+  - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: *(Supabase client key)*
+  - `SUPABASE_SERVICE_ROLE_KEY`: *(Supabase service key)*
+  - `CAMERA_SERVICE_URL`: `https://psys-camera-service.onrender.com`
 
 ### 4. Seed Demo Accounts
 Once the database is live, run the automated seed script to populate test personas:
