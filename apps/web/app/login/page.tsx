@@ -1,15 +1,16 @@
 import { login } from '@/lib/auth/actions'
+import LoginForm from './LoginForm'
 
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>
+  searchParams: Promise<{ error?: string; reason?: string }>
 }) {
-  const { error } = await searchParams
+  const { error, reason } = await searchParams
 
   return (
     <div
-      className="min-h-full flex items-center justify-center px-6"
+      className="min-h-full flex items-center justify-center px-6 py-12"
       style={{ background: 'var(--background)', color: 'var(--foreground)' }}
     >
       <div className="w-full max-w-sm">
@@ -18,30 +19,12 @@ export default async function LoginPage({
             PSYS
           </p>
           <h1 className="text-xl font-semibold">Sign in to your dashboard</h1>
+          <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>
+            Automated Classroom Attendance & Verification
+          </p>
         </div>
 
-        <form
-          action={login}
-          className="space-y-4 p-6 rounded-lg border"
-          style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}
-        >
-          <div>
-            <label className="field-label">Email</label>
-            <input type="email" name="email" required className="field-input" />
-          </div>
-          <div>
-            <label className="field-label">Password</label>
-            <input type="password" name="password" required className="field-input" />
-          </div>
-          {error && (
-            <p className="text-sm" style={{ color: 'var(--accent-bad)' }}>
-              {decodeURIComponent(error)}
-            </p>
-          )}
-          <button type="submit" className="btn-primary w-full">
-            Sign in
-          </button>
-        </form>
+        <LoginForm action={login} error={error} reason={reason} />
       </div>
     </div>
   )
