@@ -44,24 +44,59 @@ export async function getSessionAttendance(sessionId: string) {
 /** Fetch the review queue (uncertain / camera_issue) from camera-service. */
 export async function getReviewQueue(sessionId: string) {
   await getCurrentUser() // auth guard
-  const token = await getAccessToken()
 
   try {
+    const token = await getAccessToken()
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), 2000)
+
     const res = await fetch(`${CAMERA_SERVICE_URL}/sessions/${sessionId}/review`, {
       headers: { Authorization: `Bearer ${token}` },
       cache: 'no-store',
+      signal: controller.signal,
     })
-    if (!res.ok) return []
-    const data = await res.json()
-    return (data.flagged ?? []) as Array<{
-      student_id: string
-      status: string
-      presence_score: number | null
-      evidence: Array<{ url: string; quality_score: number }> | null
-    }>
+    clearTimeout(timer)
+    if (res.ok) {
+      const data = await res.json()
+      return (data.flagged ?? []) as Array<{
+        student_id: string
+        status: string
+        presence_score: number | null
+        evidence: Array<{ url: string; quality_score: number }> | null
+      }>
+    }
   } catch {
-    return []
+    // If microservice is unavailable, fallback directly to Supabase
   }
+
+  const supabase = await createClient()
+  const { data: flagged } = await supabase
+    .from('final_attendance')
+    .select('student_id, status, presence_score')
+    .eq('session_id', sessionId)
+    .in('status', ['uncertain', 'camera_issue'])
+
+  if (!flagged || flagged.length === 0) return []
+
+  const results: any[] = []
+  for (const row of flagged) {
+    const { data: obs } = await supabase
+      .from('attendance_observations')
+      .select('captured_at, match_status, quality_score, evidence_photo_url')
+      .eq('session_id', sessionId)
+      .eq('student_id', row.student_id)
+      .not('evidence_photo_url', 'is', null)
+      .order('captured_at')
+
+    results.push({
+      student_id: row.student_id,
+      status: row.status,
+      presence_score: row.presence_score,
+      evidence: obs || [],
+    })
+  }
+
+  return results
 }
 
 /**

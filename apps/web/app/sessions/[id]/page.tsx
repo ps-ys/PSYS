@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getAccessToken } from '@/lib/auth/session'
 import { markPermittedExit, recordReturn } from '@/lib/enrollment/exceptions'
 import { fileDispute, resolveDispute } from '@/lib/enrollment/disputes'
-import { resolveReviewItem } from '@/lib/enrollment/attendance'
+import { resolveReviewItem, getReviewQueue } from '@/lib/enrollment/attendance'
 import ExportCsvButton from '@/lib/enrollment/ExportCsvButton'
 
 const CAMERA_SERVICE_URL = process.env.CAMERA_SERVICE_URL || 'http://localhost:8000'
@@ -96,20 +96,7 @@ export default async function SessionDetailPage({
 
   const markExit = markPermittedExit.bind(null, id)
 
-  let reviewQueue: any[] = []
-  try {
-    const token = await getAccessToken()
-    const res = await fetch(`${CAMERA_SERVICE_URL}/sessions/${id}/review`, {
-      headers: { Authorization: `Bearer ${token}` },
-      cache: 'no-store',
-    })
-    if (res.ok) {
-      const data = await res.json()
-      reviewQueue = data.flagged || []
-    }
-  } catch {
-    reviewQueue = []
-  }
+  const reviewQueue = await getReviewQueue(id)
 
   // Summary stats
   const presentCount = finalAttendance?.filter((f) => f.status === 'present').length ?? 0

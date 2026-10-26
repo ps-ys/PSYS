@@ -1,0 +1,26 @@
+name: 24/7 Service Keep-Alive
+
+on:
+  schedule:
+    # Runs every 10 minutes to prevent Render 15-minute spin-down and Supabase inactivity pause
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    name: Ping Backend & Database
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Render Camera Service
+        run: |
+          echo "Pinging Render camera service at https://psys-camera-service.onrender.com/health..."
+          RENDER_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 https://psys-camera-service.onrender.com/health || echo "FAILED")
+          echo "Render Camera Service HTTP Status: $RENDER_STATUS"
+
+      - name: Ping Web App & Supabase Health
+        env:
+          APP_URL: ${{ vars.PRODUCTION_APP_URL || 'https://psys-attendance.vercel.app' }}
+        run: |
+          echo "Pinging Web & Database health endpoint at $APP_URL/api/health..."
+          RESPONSE=$(curl -s --max-time 15 "$APP_URL/api/health" || echo "FAILED")
+          echo "Health response: $RESPONSE"
